@@ -4,6 +4,14 @@
  * @param {...string} fields - the properties paths to pick
  * @returns {object} - returns the new object
  */
-export const pick = (obj, ...fields) => {
-
-};
+export const pick = (obj, ...fields) => (
+  Object.keys(obj).reduce((accum, objKey) => {
+    if (fields.includes(objKey)) {
+      accum = {
+        ...accum,
+        [objKey]: obj[objKey]
+      };
+    }
+    return accum;
+  }, {})
+);
