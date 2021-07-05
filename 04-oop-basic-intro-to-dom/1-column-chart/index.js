@@ -12,15 +12,22 @@ function getColumnProps(data) {
 
 
 export default class ColumnChart {
-  constructor(props = {}) {
-    this.label = props.label;
-    this.data = props.data ? getColumnProps(props.data) : [];
-    this.value = props.formatHeading ? props.formatHeading(props.value) : props.value;
-    this.link = props.link;
-    this.chartHeight = 50;
+  chartHeight = 50;
+  element;
+
+  constructor({
+    data = [],
+    label = '',
+    link = '',
+    value = 0,
+    formatHeading = data => data,
+  } = {}) {
+    this.label = label;
+    this.data = getColumnProps(data);
+    this.value = formatHeading(value);
+    this.link = link;
 
     this.render();
-    this.update();
   }
 
   update(newData = []) {
@@ -28,26 +35,30 @@ export default class ColumnChart {
     this.renderColumns();
   }
 
-  render() {
-    const divElement = document.createElement("div");
-
-    divElement.innerHTML = `<div class='column-chart' style="--chart-height: 50">
-      <div class="column-chart__title">
-        ${this.label}
-        ${this.link ? `<a class="column-chart__link" href=${this.link}>View all</a>` : " <span />"}
+  get template() {
+    return `<div class='column-chart' style="--chart-height: 50">
+    <div class="column-chart__title">
+      ${this.label}
+      ${this.link ? `<a class="column-chart__link" href=${this.link}>View all</a>` : " <span />"}
+    </div>
+    <div class="column-chart__container">
+      <div data-element="header" class="column-chart__header">
+        ${this.value}
       </div>
-      <div class="column-chart__container">
-        <div data-element="header" class="column-chart__header">
-          ${this.value}
-        </div>
-        <div data-element="body" class="column-chart__chart">
-          ${this.data?.length > 0
+      <div data-element="body" class="column-chart__chart">
+        ${this.data?.length > 0
             ? this.renderColumns()
             : this.renderDefaultImage()
           }
-        </div>
-    </div>
-    `;
+      </div>
+  </div>
+  `;
+  }
+
+  render() {
+    const divElement = document.createElement("div");
+
+    divElement.innerHTML = this.template;
 
     this.element = divElement.firstElementChild;
 
@@ -57,7 +68,7 @@ export default class ColumnChart {
   renderColumns() {
     return this.data.reduce(
       (template, { percent, value }) =>
-      (template = `${template}
+        (template = `${template}
       <div style="--value: ${value}" data-tooltip=${percent}></div>
       `),
       ""
@@ -69,10 +80,13 @@ export default class ColumnChart {
   }
 
   remove() {
-    this.element.remove();
+    if (this.element) {
+      this.element.remove();
+    }
   }
 
   destroy() {
+    this.element = null;
     this.remove();
   }
 }
