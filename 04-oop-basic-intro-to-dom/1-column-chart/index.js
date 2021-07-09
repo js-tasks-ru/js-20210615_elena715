@@ -35,6 +35,8 @@ export default class ColumnChart {
     this.renderColumns();
   }
 
+  getLinkTemp
+
   get template() {
     return `<div class='column-chart' style="--chart-height: 50">
     <div class="column-chart__title">
@@ -46,7 +48,7 @@ export default class ColumnChart {
         ${this.value}
       </div>
       <div data-element="body" class="column-chart__chart">
-        ${this.data?.length > 0
+        ${this.data?.length
             ? this.renderColumns()
             : this.renderDefaultImage()
           }
